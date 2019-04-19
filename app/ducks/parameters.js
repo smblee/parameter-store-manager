@@ -285,11 +285,10 @@ function parameterNames(state = [], action) {
     case FETCH_ALL_PARAMETERS_REQUEST:
       return [];
     case FETCH_ALL_PARAMETERS_BATCH_LOADED: {
-      return [...state, ...action.payload.map(res => res.Name)];
+      return [...new Set([...state, ...action.payload.map(res => res.Name)])];
     }
     case CREATE_GENERIC_PARAMETER_SUCCESS: {
-      console.log(action.payload.params);
-      return [...state, action.payload.params.Name];
+      return [...new Set([...state, action.payload.params.Name])];
     }
     case DELETE_PARAMETER_SUCCESS: {
       return state.filter(name => name !== action.payload.name);
