@@ -10,15 +10,60 @@
  *
  * @flow
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import path from 'path';
 import MenuBuilder from './menu';
 
 export default class AppUpdater {
   constructor() {
+
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
+
+    autoUpdater.on('error', error => {
+      dialog.showErrorBox(
+        'Error: ',
+        error == null ? 'unknown' : (error.stack || error).toString()
+      );
+    });
+
+    autoUpdater.on('update-available', () => {
+      dialog.showMessageBox(
+        {
+          type: 'info',
+          title: 'Found Updates',
+          message: 'Found updates, do you want update now?',
+          buttons: ['Sure', 'No']
+        },
+        buttonIndex => {
+          if (buttonIndex === 0) {
+            autoUpdater.downloadUpdate();
+          }
+        }
+      );
+    });
+
+    autoUpdater.on('update-not-available', () => {
+      dialog.showMessageBox({
+        title: 'No Updates',
+        message: 'Current version is up-to-date.'
+      });
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+      dialog.showMessageBox(
+        {
+          title: 'Install Updates',
+          message: 'Updates downloaded, application will be quit for update...'
+        },
+        () => {
+          setImmediate(() => autoUpdater.quitAndInstall());
+        }
+      );
+    });
+
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
@@ -98,5 +143,7 @@ app.on('ready', async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  if (process.env.NODE_ENV === 'production') {
+    new AppUpdater();
+  }
 });
