@@ -205,9 +205,8 @@ export default class MenuBuilder {
               ]
       },
     {
-      label: `Current Version: ${
-        process.env.NODE_ENV === 'development' ||
-        process.env.DEBUG_PROD === 'true' ? 'DEVELOPMENT' : window.require('electron').remote.app.getVersion()}`,
+      label: `Current &Version: ${
+        process.env.NODE_ENV === 'development' ? 'DEVELOPMENT' : app.getVersion()}`,
     }
     ];
 
