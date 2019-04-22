@@ -1,9 +1,10 @@
 # Parameter Store Manager
+Are you tired of the AWS Console yet? Can't figure out `name` `starts-with` vs `path` `recursive` when searching for parameters? 
+#### Parameter Store Manager  
 
-<p align="center">
-Built with... 
-<img src="https://user-images.githubusercontent.com/12294525/44203609-77d50800-a147-11e8-98f0-f2403527abdc.png" width="600px" />
-</p>
+Built with `electron-react-boilerplate`.
+
+
 
 ## Run
 
@@ -86,3 +87,21 @@ import './app.global.scss';
 ## Static Type Checking
 
 This project comes with Flow support out of the box! You can annotate your code with types, [get Flow errors as ESLint errors](https://github.com/amilajack/eslint-plugin-flowtype-errors), and get [type errors during runtime](https://github.com/codemix/flow-runtime) during development. Types are completely optional.
+
+
+## TODOS
+- Add app icon
+- Set up CI for release. (Windows, Mac, Linux)
+- Clean up the code base and all the unneeded boilerplate code.
+- Create other releases besides Windows.
+- Add tests
+- Support other types of add use cases besides the assumed `services` pattern.
+- Ability to view previous versions
+- Logging
+- Backup
+- Autocomplete (service names)
+- Configure AWS Setup (Environments, etc.)
+- Bulk delete
+- Bulk edit
+
+and a lot more...
