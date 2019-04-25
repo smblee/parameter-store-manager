@@ -36,6 +36,7 @@ class CreationFormButton extends Component {
           type={this.props.buttonType || 'default'}
           onClick={this.showModal}
           block={this.props.buttonBlock}
+          {...this.props}
         >
           {this.props.buttonText || 'Add New Parameter(s)'}
         </Button>

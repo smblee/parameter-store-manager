@@ -13,7 +13,6 @@
 import { app, BrowserWindow, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import Store from 'electron-store';
 import MenuBuilder from './menu';
 
 export default class AppUpdater {

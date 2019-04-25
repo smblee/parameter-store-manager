@@ -2,23 +2,19 @@
 import React, { Component } from 'react';
 import {
   Table,
-  message,
   Breadcrumb,
   Button,
   Layout,
   Tree,
   Input,
   Typography,
-  Progress,
   Alert,
-  Row,
-  Col,
-  Icon,
   Spin
 } from 'antd';
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
 import globToRegexp from 'glob-to-regexp';
 import SearchTree from './SearchTree';
 import {
@@ -27,10 +23,11 @@ import {
 } from '../ducks/parameters';
 import CreationFormButton from './CreationFormButton';
 import DeleteButton from './DeleteButton';
-import ReactTimeAgo from 'react-time-ago';
+import localStore from '../store/localStore';
+import SettingsButton from './SettingsButton';
 
 const { TreeNode } = Tree;
-const { Paragraph, Title } = Typography;
+const { Paragraph } = Typography;
 const { Search } = Input;
 
 const { Content, Footer, Sider } = Layout;
@@ -80,7 +77,6 @@ class Home extends Component {
       allParametersErrored
     } = this.props;
     const { tableCursor } = this.state;
-
     const paramsToShowOnTable = tableCursor
       ? parameters.filter(param => {
           const reg = globToRegexp(`${tableCursor}*`);
@@ -237,7 +233,17 @@ class Home extends Component {
                   height: '100%'
                 }}
               >
-                <CreationFormButton buttonType="primary" />
+                <div
+                  style={{
+                    display: 'flex'
+                  }}
+                >
+                  <SettingsButton />
+                  <CreationFormButton
+                    buttonType="primary"
+                    style={{ flexGrow: 1, marginLeft: '20px' }}
+                  />
+                </div>
                 {allParametersErrored || allParametersLoaded ? (
                   <SearchTree
                     data={parameters}

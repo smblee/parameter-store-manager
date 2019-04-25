@@ -98,7 +98,6 @@ class CreationForm extends React.Component {
       editFlow
     } = this.props;
 
-    console.log(form);
     const { getFieldDecorator } = form;
     const { creationType } = this.state;
     const formItemLayout = {

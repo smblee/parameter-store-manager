@@ -241,10 +241,13 @@
     "devtron": "^1.4.0",
     "electron-debug": "^2.2.0",
     "electron-log": "^3.0.5",
+    "electron-store": "^3.2.0",
     "electron-updater": "^4.0.6",
     "glob-to-regexp": "^0.4.1",
     "history": "^4.9.0",
+    "javascript-time-ago": "^2.0.1",
     "lodash": "^4.17.11",
+    "memoize-one": "^5.0.4",
     "p-all": "^2.1.0",
     "react": "^16.8.6",
     "react-copy-to-clipboard": "^5.0.1",
@@ -257,8 +260,7 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "source-map-support": "^0.5.12",
-    "javascript-time-ago": "^2.0.1"
+    "source-map-support": "^0.5.12"
   },
   "devEngines": {
     "node": ">=7.x",
