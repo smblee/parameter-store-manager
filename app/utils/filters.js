@@ -1,15 +1,18 @@
 // Helper functions for trees/filtering
-export const pathsToTreeNodes = pathStrings => {
+export const pathsToTreeNodes = (pathStrings, pathDelimiter) => {
   const tree = {};
 
   function addNode(pathStr) {
-    const splitPath = pathStr.split('/');
+    // add the pathDelimiter (e.g. '/', '-') to the beginning if it doesn't exist.
+    const extendedPathStr =
+      pathStr[0] !== pathDelimiter ? pathDelimiter + pathStr : pathStr;
+    const splitPath = extendedPathStr.split(pathDelimiter);
     let ptr = tree;
     for (let i = 0; i < splitPath.length; i++) {
       const node = {
         name: splitPath[i],
         title: splitPath[i],
-        key: splitPath.slice(0, i + 1).join('/') + '/'
+        key: splitPath.slice(0, i + 1).join(pathDelimiter)
       };
 
       ptr[splitPath[i]] = ptr[splitPath[i]] || node;

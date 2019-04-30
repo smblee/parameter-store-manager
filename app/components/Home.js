@@ -23,7 +23,7 @@ import {
 } from '../ducks/parameters';
 import CreationFormButton from './CreationFormButton';
 import DeleteButton from './DeleteButton';
-import localStore from '../store/localStore';
+import localStore, { availableSettings } from '../store/localStore';
 import SettingsButton from './SettingsButton';
 
 const { TreeNode } = Tree;
@@ -32,17 +32,29 @@ const { Search } = Input;
 
 const { Content, Footer, Sider } = Layout;
 
-function stripTrailingSlash(str) {
-  if (str.substr(-1) === '/') {
+function stripTrailingPathDelimiter(str) {
+  if (str.substr(-1) === this.state.pathDelimiter) {
     return str.substr(0, str.length - 1);
   }
   return str;
 }
 
 class Home extends Component {
-  state = {
-    tableCursor: '/services/'
-  };
+  constructor(props) {
+    super(props);
+    const pathDelimiter = localStore.get(availableSettings.pathDelimiter);
+
+    localStore.onDidChange(
+      availableSettings.pathDelimiter,
+      (newValue, oldValue) => {
+        if (newValue !== oldValue) this.setState({ pathDelimiter: newValue });
+      }
+    );
+    this.state = {
+      tableCursor: '',
+      pathDelimiter
+    };
+  }
 
   renderTreeNodes = data =>
     data.map(item => {
@@ -57,8 +69,7 @@ class Home extends Component {
     });
 
   onTreeSelect = keys => {
-    console.log(keys);
-    this.setState({ tableCursor: stripTrailingSlash(keys[0]) });
+    this.setState({ tableCursor: stripTrailingPathDelimiter(keys[0]) });
   };
 
   onTableFilterChange = e => {
@@ -76,7 +87,7 @@ class Home extends Component {
       allParametersLoading,
       allParametersErrored
     } = this.props;
-    const { tableCursor } = this.state;
+    const { tableCursor, pathDelimiter } = this.state;
     const paramsToShowOnTable = tableCursor
       ? parameters.filter(param => {
           const reg = globToRegexp(`${tableCursor}*`);
@@ -93,9 +104,9 @@ class Home extends Component {
         width: 300,
         sorter: (a, b) => (a.Name < b.Name ? -1 : a.Name > b.Name ? 1 : 0),
         render: pathString => {
-          const paths = pathString.split('/');
+          const paths = pathString.split(pathDelimiter);
           const breadCrumbItems = paths.map((path, idx) => {
-            const pathSoFar = paths.slice(0, idx + 1).join('/');
+            const pathSoFar = paths.slice(0, idx + 1).join(pathDelimiter);
 
             // if last index
             if (idx === paths.length - 1) {
@@ -120,10 +131,7 @@ class Home extends Component {
 
           return (
             <span style={{ wordBreak: 'break-word' }}>
-              <Breadcrumb>
-                <span className="ant-breadcrumb-separator">/</span>
-                {breadCrumbItems}
-              </Breadcrumb>
+              <Breadcrumb>{breadCrumbItems}</Breadcrumb>
             </span>
           );
         }
@@ -235,7 +243,8 @@ class Home extends Component {
               >
                 <div
                   style={{
-                    display: 'flex'
+                    display: 'flex',
+                    minHeight: '35px'
                   }}
                 >
                   <SettingsButton />

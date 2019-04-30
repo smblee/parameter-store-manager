@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tree, Input } from 'antd';
 import * as filters from '../utils/filters';
+import localStore, { availableSettings } from '../store/localStore';
 
 const { TreeNode } = Tree;
 const { Search } = Input;
@@ -8,29 +9,49 @@ const { Search } = Input;
 export default class SearchTree extends React.Component {
   constructor(props) {
     super(props);
+
+    const pathDelimiter = localStore.get(availableSettings.pathDelimiter);
+
     const searchTreeNodes = filters.pathsToTreeNodes(
-      props.data.map(p => p.Name)
+      props.data.map(p => p.Name),
+      pathDelimiter
     )[0];
+
+    localStore.onDidChange(
+      availableSettings.pathDelimiter,
+      (newValue, oldValue) => {
+        if (newValue !== oldValue) this.setState({ pathDelimiter: newValue });
+      }
+    );
 
     this.state = {
       expandedKeys: [],
       searchValue: '',
       filteredTreeRootNode: searchTreeNodes,
-      treeRootNode: searchTreeNodes
+      treeRootNode: searchTreeNodes,
+      pathDelimiter
     };
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.data !== prevProps.data) {
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.props.data !== prevProps.data ||
+      this.state.pathDelimiter !== prevState.pathDelimiter
+    ) {
       const treeRootNode = filters.pathsToTreeNodes(
-        this.props.data.map(p => p.Name)
+        this.props.data.map(p => p.Name),
+        this.state.pathDelimiter
       )[0];
-      this.setState({
-        treeRootNode
-      });
-
-      // filter again with the new data
-      this.onFilterChange({ e: { target: { value: this.state.searchValue } } });
+      this.setState(
+        {
+          treeRootNode
+        },
+        () =>
+          // filter again with the new data
+          this.onFilterChange({
+            e: { target: { value: this.state.searchValue } }
+          })
+      );
     }
   }
 
@@ -63,7 +84,6 @@ export default class SearchTree extends React.Component {
   render() {
     const { searchValue, expandedKeys, filteredTreeRootNode } = this.state;
     const { onTreeSelect } = this.props;
-
     const loop = nodes =>
       nodes.map(item => {
         const index = item.title
