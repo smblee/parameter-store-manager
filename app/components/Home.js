@@ -32,29 +32,30 @@ const { Search } = Input;
 
 const { Content, Footer, Sider } = Layout;
 
-function stripTrailingPathDelimiter(str) {
-  if (str.substr(-1) === this.state.pathDelimiter) {
-    return str.substr(0, str.length - 1);
-  }
-  return str;
-}
-
 class Home extends Component {
   constructor(props) {
     super(props);
     const pathDelimiter = localStore.get(availableSettings.pathDelimiter);
 
-    localStore.onDidChange(
+    this.unsubscribeStore = localStore.onDidChange(
       availableSettings.pathDelimiter,
       (newValue, oldValue) => {
         if (newValue !== oldValue) this.setState({ pathDelimiter: newValue });
       }
     );
+
     this.state = {
       tableCursor: '',
       pathDelimiter
     };
   }
+
+  stripTrailingPathDelimiter = str => {
+    if (str.substr(-1) === this.state.pathDelimiter) {
+      return str.substr(0, str.length - 1);
+    }
+    return str;
+  };
 
   renderTreeNodes = data =>
     data.map(item => {
@@ -69,7 +70,7 @@ class Home extends Component {
     });
 
   onTreeSelect = keys => {
-    this.setState({ tableCursor: stripTrailingPathDelimiter(keys[0]) });
+    this.setState({ tableCursor: this.stripTrailingPathDelimiter(keys[0]) });
   };
 
   onTableFilterChange = e => {
@@ -78,6 +79,10 @@ class Home extends Component {
 
   componentDidMount() {
     this.props.fetchAllParameters();
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeStore();
   }
 
   render() {

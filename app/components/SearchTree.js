@@ -17,7 +17,7 @@ export default class SearchTree extends React.Component {
       pathDelimiter
     )[0];
 
-    localStore.onDidChange(
+    this.unsubscribeStore = localStore.onDidChange(
       availableSettings.pathDelimiter,
       (newValue, oldValue) => {
         if (newValue !== oldValue) this.setState({ pathDelimiter: newValue });
@@ -53,6 +53,10 @@ export default class SearchTree extends React.Component {
           })
       );
     }
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeStore();
   }
 
   onExpand = expandedKeys => {
