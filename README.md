@@ -6,7 +6,7 @@ Are you tired of the AWS Console yet? Can't figure out `name` `starts-with` vs `
 
 ![alt text](https://raw.githubusercontent.com/smblee/parameter-store-manager/master/resources/screenshot.png)
 
-Built with `electron-react-boilerplate`!
+Built with `electron-react-boilerplate`.
 
 ## Run
 
