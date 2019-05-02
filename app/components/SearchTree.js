@@ -95,6 +95,8 @@ export default class SearchTree extends React.Component {
   render() {
     const { searchValue, expandedKeys, filteredTreeRootNode } = this.state;
     const { onTreeSelect, data } = this.props;
+
+    console.log(data);
     const { length } = data;
     const loop = nodes =>
       nodes.map(item => {
