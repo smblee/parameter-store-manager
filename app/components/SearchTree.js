@@ -41,11 +41,10 @@ export default class SearchTree extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { data } = this.props;
-    const { map } = data;
     const { pathDelimiter, searchValue } = this.state;
     if (data !== prevProps.data || pathDelimiter !== prevState.pathDelimiter) {
       const treeRootNode = filters.pathsToTreeNodes(
-        map(p => p.Name),
+        data.map(p => p.Name),
         pathDelimiter
       )[0];
       // eslint-disable-next-line react/no-did-update-set-state
