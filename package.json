@@ -1,7 +1,7 @@
 {
   "name": "parameter-store-manager",
   "productName": "ParameterStoreManager",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "AWS Parameter store manager application that allows easy viewing and managing of parameters.",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
