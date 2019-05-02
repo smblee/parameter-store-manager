@@ -48,7 +48,6 @@ const fetchAllParameters = () => dispatch => {
               type: FETCH_ALL_PARAMETERS_FAILURE,
               payload: err
             });
-            console.log(err);
             notification.error({
               message:
                 'Parameters were not loaded. Check your AWS Connections (~/.aws/credentials, STSKey, or environment variables)',
@@ -239,7 +238,6 @@ const createGenericParameter = (
     .putParameter(params)
     .promise()
     .then(res => {
-      console.log(res);
       dispatch({
         type: CREATE_GENERIC_PARAMETER_SUCCESS,
         payload: { response: res, params }

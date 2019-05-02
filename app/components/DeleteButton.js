@@ -18,7 +18,6 @@ class DeleteButton extends React.Component {
         return res;
       })
       .catch(err => {
-        console.log(err.code, err.message);
         notification.error({
           message: 'Something went wrong while deleting the parameter.',
           description: err.code || ''
