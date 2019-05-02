@@ -97,7 +97,6 @@ class CreationForm extends React.Component {
             return res;
           })
           .catch(creationError => {
-            console.log(creationError);
             notification.error({
               message: editFlow
                 ? 'Parameter was not saved'

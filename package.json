@@ -212,6 +212,7 @@
     "opencollective-postinstall": "^2.0.2",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "prettier": "^1.17.0",
+    "prop-types": "^15.7.2",
     "react-test-renderer": "^16.8.6",
     "redux-logger": "^3.0.6",
     "rimraf": "^2.6.3",
@@ -233,8 +234,7 @@
     "webpack-cli": "^3.3.1",
     "webpack-dev-server": "^3.3.1",
     "webpack-merge": "^4.2.1",
-    "yarn": "^1.15.2",
-    "prop-types": "^15.7.2"
+    "yarn": "^1.15.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
@@ -248,6 +248,7 @@
     "electron-updater": "^4.0.6",
     "glob-to-regexp": "^0.4.1",
     "history": "^4.9.0",
+    "javascript-stringify": "^2.0.0",
     "javascript-time-ago": "^2.0.1",
     "lodash": "^4.17.11",
     "memoize-one": "^5.0.4",
@@ -263,7 +264,8 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "source-map-support": "^0.5.12"
+    "source-map-support": "^0.5.12",
+    "stringify-object": "^3.3.0"
   },
   "devEngines": {
     "node": ">=7.x",
