@@ -1,4 +1,3 @@
-// @flow
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 import parametersReducer from './parameters';

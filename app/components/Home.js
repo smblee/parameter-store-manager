@@ -1,24 +1,20 @@
-// @flow
 import React, { Component } from 'react';
 import {
-  Table,
-  message,
+  Alert,
   Breadcrumb,
   Button,
-  Layout,
-  Tree,
   Input,
-  Typography,
-  Progress,
-  Alert,
-  Row,
-  Col,
-  Icon,
-  Spin
+  Layout,
+  Spin,
+  Table,
+  Tree,
+  Typography
 } from 'antd';
+import PropTypes from 'prop-types';
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
 import globToRegexp from 'glob-to-regexp';
 import SearchTree from './SearchTree';
 import {
@@ -27,24 +23,64 @@ import {
 } from '../ducks/parameters';
 import CreationFormButton from './CreationFormButton';
 import DeleteButton from './DeleteButton';
-import ReactTimeAgo from 'react-time-ago';
+import localStore, { availableSettings } from '../store/localStore';
+import SettingsButton from './SettingsButton';
 
 const { TreeNode } = Tree;
-const { Paragraph, Title } = Typography;
+const { Paragraph } = Typography;
 const { Search } = Input;
 
 const { Content, Footer, Sider } = Layout;
 
-function stripTrailingSlash(str) {
-  if (str.substr(-1) === '/') {
-    return str.substr(0, str.length - 1);
-  }
-  return str;
-}
-
 class Home extends Component {
-  state = {
-    tableCursor: '/services/'
+  static propTypes = {
+    allParametersErrored: PropTypes.bool,
+    allParametersLastUpdatedDate: PropTypes.string.isRequired,
+    allParametersLoaded: PropTypes.bool,
+    allParametersLoading: PropTypes.bool,
+    deleteParameter: PropTypes.func.isRequired,
+    fetchAllParameters: PropTypes.func.isRequired,
+    parameters: PropTypes.arrayOf().isRequired
+  };
+
+  static defaultProps = {
+    allParametersErrored: false,
+    allParametersLoaded: false,
+    allParametersLoading: false
+  };
+
+  constructor(props) {
+    super(props);
+    const pathDelimiter = localStore.get(availableSettings.pathDelimiter);
+
+    this.unsubscribeStore = localStore.onDidChange(
+      availableSettings.pathDelimiter,
+      (newValue, oldValue) => {
+        if (newValue !== oldValue) this.setState({ pathDelimiter: newValue });
+      }
+    );
+
+    this.state = {
+      tableCursor: '',
+      pathDelimiter
+    };
+  }
+
+  componentDidMount() {
+    const { fetchAllParameters } = this.props;
+    fetchAllParameters();
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeStore();
+  }
+
+  stripTrailingPathDelimiter = str => {
+    const { pathDelimiter } = this.state;
+    if (str.substr(-1) === pathDelimiter) {
+      return str.substr(0, str.length - 1);
+    }
+    return str;
   };
 
   renderTreeNodes = data =>
@@ -60,27 +96,23 @@ class Home extends Component {
     });
 
   onTreeSelect = keys => {
-    console.log(keys);
-    this.setState({ tableCursor: stripTrailingSlash(keys[0]) });
+    this.setState({ tableCursor: this.stripTrailingPathDelimiter(keys[0]) });
   };
 
   onTableFilterChange = e => {
     this.setState({ tableCursor: e.target.value });
   };
 
-  componentDidMount() {
-    this.props.fetchAllParameters();
-  }
-
   render() {
     const {
       parameters,
       allParametersLoaded,
       allParametersLoading,
-      allParametersErrored
+      allParametersErrored,
+      fetchAllParameters,
+      allParametersLastUpdatedDate
     } = this.props;
-    const { tableCursor } = this.state;
-
+    const { tableCursor, pathDelimiter } = this.state;
     const paramsToShowOnTable = tableCursor
       ? parameters.filter(param => {
           const reg = globToRegexp(`${tableCursor}*`);
@@ -95,15 +127,17 @@ class Home extends Component {
         dataIndex: 'Name',
         key: 'Name',
         width: 300,
+        // eslint-disable-next-line no-nested-ternary
         sorter: (a, b) => (a.Name < b.Name ? -1 : a.Name > b.Name ? 1 : 0),
         render: pathString => {
-          const paths = pathString.split('/');
+          const paths = pathString.split(pathDelimiter);
           const breadCrumbItems = paths.map((path, idx) => {
-            const pathSoFar = paths.slice(0, idx + 1).join('/');
+            const pathSoFar = paths.slice(0, idx + 1).join(pathDelimiter);
 
             // if last index
             if (idx === paths.length - 1) {
               return (
+                // eslint-disable-next-line react/no-array-index-key
                 <Breadcrumb.Item href="#" key={pathString + idx}>
                   <Paragraph strong copyable={{ text: pathString }}>
                     {path}
@@ -115,6 +149,7 @@ class Home extends Component {
               <Breadcrumb.Item
                 href="#"
                 onClick={() => this.onTreeSelect([pathSoFar])}
+                // eslint-disable-next-line react/no-array-index-key
                 key={pathString + idx}
               >
                 {path}
@@ -124,10 +159,7 @@ class Home extends Component {
 
           return (
             <span style={{ wordBreak: 'break-word' }}>
-              <Breadcrumb>
-                <span className="ant-breadcrumb-separator">/</span>
-                {breadCrumbItems}
-              </Breadcrumb>
+              <Breadcrumb>{breadCrumbItems}</Breadcrumb>
             </span>
           );
         }
@@ -191,6 +223,7 @@ class Home extends Component {
             value: e.Value,
             kmsKey: e.KeyId
           };
+          const { deleteParameter } = this.props;
           return (
             <Layout>
               <CreationFormButton
@@ -206,10 +239,7 @@ class Home extends Component {
                 initialFormData={currentData}
                 resetOnClose
               />
-              <DeleteButton
-                name={e.Name}
-                onDelete={this.props.deleteParameter}
-              />
+              <DeleteButton name={e.Name} onDelete={deleteParameter} />
             </Layout>
           );
         }
@@ -237,7 +267,18 @@ class Home extends Component {
                   height: '100%'
                 }}
               >
-                <CreationFormButton buttonType="primary" />
+                <div
+                  style={{
+                    display: 'flex',
+                    minHeight: '35px'
+                  }}
+                >
+                  <SettingsButton />
+                  <CreationFormButton
+                    buttonType="primary"
+                    style={{ flexGrow: 1, marginLeft: '20px' }}
+                  />
+                </div>
                 {allParametersErrored || allParametersLoaded ? (
                   <SearchTree
                     data={parameters}
@@ -263,10 +304,8 @@ class Home extends Component {
                   <div>
                     {' '}
                     Last fetched:{' '}
-                    {this.props.allParametersLastUpdatedDate ? (
-                      <ReactTimeAgo
-                        date={this.props.allParametersLastUpdatedDate}
-                      />
+                    {allParametersLastUpdatedDate ? (
+                      <ReactTimeAgo date={allParametersLastUpdatedDate} />
                     ) : (
                       'Never'
                     )}
@@ -276,7 +315,7 @@ class Home extends Component {
                         shape="circle"
                         icon="sync"
                         loading={allParametersLoading}
-                        onClick={this.props.fetchAllParameters}
+                        onClick={fetchAllParameters}
                       />
                     </span>
                   </div>
@@ -288,7 +327,7 @@ class Home extends Component {
                 style={{ marginBottom: 8 }}
                 placeholder="/services/**/Auth0"
                 onChange={this.onTableFilterChange}
-                value={this.state.tableCursor}
+                value={tableCursor}
               />
               <Table
                 dataSource={paramsToShowOnTable}

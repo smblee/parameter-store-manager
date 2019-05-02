@@ -1,37 +1,69 @@
 import React from 'react';
-import { Tree, Input } from 'antd';
+import PropTypes from 'prop-types';
+import { Input, Tree } from 'antd';
 import * as filters from '../utils/filters';
+import localStore, { availableSettings } from '../store/localStore';
 
 const { TreeNode } = Tree;
 const { Search } = Input;
 
 export default class SearchTree extends React.Component {
+  static propTypes = {
+    data: PropTypes.arrayOf().isRequired,
+    onTreeSelect: PropTypes.func.isRequired
+  };
+
   constructor(props) {
     super(props);
+
+    const pathDelimiter = localStore.get(availableSettings.pathDelimiter);
+
     const searchTreeNodes = filters.pathsToTreeNodes(
-      props.data.map(p => p.Name)
+      props.data.map(p => p.Name),
+      pathDelimiter
     )[0];
+
+    this.unsubscribeStore = localStore.onDidChange(
+      availableSettings.pathDelimiter,
+      (newValue, oldValue) => {
+        if (newValue !== oldValue) this.setState({ pathDelimiter: newValue });
+      }
+    );
 
     this.state = {
       expandedKeys: [],
       searchValue: '',
       filteredTreeRootNode: searchTreeNodes,
-      treeRootNode: searchTreeNodes
+      treeRootNode: searchTreeNodes,
+      pathDelimiter
     };
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.data !== prevProps.data) {
+  componentDidUpdate(prevProps, prevState) {
+    const { data } = this.props;
+    const { map } = data;
+    const { pathDelimiter, searchValue } = this.state;
+    if (data !== prevProps.data || pathDelimiter !== prevState.pathDelimiter) {
       const treeRootNode = filters.pathsToTreeNodes(
-        this.props.data.map(p => p.Name)
+        map(p => p.Name),
+        pathDelimiter
       )[0];
-      this.setState({
-        treeRootNode
-      });
-
-      // filter again with the new data
-      this.onFilterChange({ e: { target: { value: this.state.searchValue } } });
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState(
+        {
+          treeRootNode
+        },
+        () =>
+          // filter again with the new data
+          this.onFilterChange({
+            e: { target: { value: searchValue } }
+          })
+      );
     }
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeStore();
   }
 
   onExpand = expandedKeys => {
@@ -42,15 +74,16 @@ export default class SearchTree extends React.Component {
 
   onFilterChange = e => {
     const filter = e.target && e.target.value.trim();
+    const { treeRootNode } = this.state;
     if (!filter) {
       return this.setState({
-        filteredTreeRootNode: this.state.treeRootNode,
+        filteredTreeRootNode: treeRootNode,
         searchValue: '',
         expandedKeys: []
       });
     }
 
-    let filtered = filters.filterTree(this.state.treeRootNode, filter);
+    let filtered = filters.filterTree(treeRootNode, filter);
     filtered = filters.expandFilteredNodes(filtered, filter);
 
     this.setState({
@@ -62,8 +95,8 @@ export default class SearchTree extends React.Component {
 
   render() {
     const { searchValue, expandedKeys, filteredTreeRootNode } = this.state;
-    const { onTreeSelect } = this.props;
-
+    const { onTreeSelect, data } = this.props;
+    const { length } = data;
     const loop = nodes =>
       nodes.map(item => {
         const index = item.title
@@ -96,7 +129,7 @@ export default class SearchTree extends React.Component {
       <div>
         <Search
           style={{ marginBottom: 8 }}
-          placeholder={`Search Tree (${this.props.data.length} parameters)`}
+          placeholder={`Search Tree (${length} parameters)`}
           onChange={this.onFilterChange}
         />
         <Tree

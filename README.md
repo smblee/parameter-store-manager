@@ -1,13 +1,12 @@
 # Parameter Store Manager
-Are you tired of the AWS Console yet? Can't figure out `name` `starts-with` vs `path` `recursive` when searching for parameters? 
+
+Are you tired of the AWS Console yet? Can't figure out `name` `starts-with` vs `path` `recursive` when searching for parameters?
+
 #### Parameter Store Manager is a desktop application that helps users easily view/search/manage AWS parameter store parameters.
 
 ![alt text](https://raw.githubusercontent.com/smblee/parameter-store-manager/master/resources/screenshot.png)
-  
 
 Built with `electron-react-boilerplate`.
-
-
 
 ## Run
 
@@ -91,8 +90,8 @@ import './app.global.scss';
 
 This project comes with Flow support out of the box! You can annotate your code with types, [get Flow errors as ESLint errors](https://github.com/amilajack/eslint-plugin-flowtype-errors), and get [type errors during runtime](https://github.com/codemix/flow-runtime) during development. Types are completely optional.
 
-
 ## TODOS
+
 - Add app icon
 - Move off of yarn to npm
 - Set up CI for release. (Windows, Mac, Linux)

@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
-import AWS from 'aws-sdk';
-
 import { combineReducers } from 'redux';
 import chunk from 'lodash/chunk';
 import pAll from 'p-all';
-import { createSelector } from 'reselect';
 import { notification } from 'antd';
+import { createSelector } from 'reselect';
+import stringifyObject from 'stringify-object';
+import aws from '../clients/aws';
 
 const FETCH_ALL_PARAMETERS_REQUEST = 'FETCH_ALL_PARAMETERS_REQUEST';
 const FETCH_ALL_PARAMETERS_FAILURE = 'FETCH_ALL_PARAMETERS_FAILURE';
@@ -32,51 +32,51 @@ const DELETE_PARAMETER_REQUEST = 'DELETE_PARAMETER_REQUEST';
 const DELETE_PARAMETER_FAILURE = 'DELETE_PARAMETER_FAILURE';
 const DELETE_PARAMETER_SUCCESS = 'DELETE_PARAMETER_SUCCESS';
 
-const ssm = new AWS.SSM({
-  region: 'eu-west-1'
-});
-
-const kms = new AWS.KMS({
-  region: 'eu-west-1'
-});
-
 const fetchAllParameters = () => dispatch => {
   dispatch({ type: FETCH_ALL_PARAMETERS_REQUEST });
 
   let allParameters = [];
 
   const recursivelyPopulateParameters = nextToken => {
-    ssm.describeParameters(
-      { NextToken: nextToken, MaxResults: 50 },
-      (err, data) => {
-        if (err) {
-          dispatch({
-            type: FETCH_ALL_PARAMETERS_FAILURE,
-            payload: err
-          });
-        } else {
-          dispatch({
-            type: FETCH_ALL_PARAMETERS_BATCH_LOADED,
-            payload: data.Parameters
-          });
-
-          const names = data.Parameters.map(p => p.Name);
-
-          // initiate the action creator to fetch parameter values
-          dispatch(fetchParameterValues(names));
-
-          allParameters = [...allParameters, ...data.Parameters];
-          if (data.NextToken) {
-            recursivelyPopulateParameters(data.NextToken);
+    aws
+      .getSSM()
+      .describeParameters(
+        { NextToken: nextToken, MaxResults: 50 },
+        (err, data) => {
+          if (err) {
+            dispatch({
+              type: FETCH_ALL_PARAMETERS_FAILURE,
+              payload: err
+            });
+            console.log(err);
+            notification.error({
+              message:
+                'Parameters were not loaded. Check your AWS Connections (~/.aws/credentials, STSKey, or environment variables)',
+              description: stringifyObject(err)
+            });
           } else {
             dispatch({
-              type: FETCH_ALL_PARAMETERS_SUCCESS,
-              payload: allParameters
+              type: FETCH_ALL_PARAMETERS_BATCH_LOADED,
+              payload: data.Parameters
             });
+
+            const names = data.Parameters.map(p => p.Name);
+
+            // initiate the action creator to fetch parameter values
+            dispatch(fetchParameterValues(names));
+
+            allParameters = [...allParameters, ...data.Parameters];
+            if (data.NextToken) {
+              recursivelyPopulateParameters(data.NextToken);
+            } else {
+              dispatch({
+                type: FETCH_ALL_PARAMETERS_SUCCESS,
+                payload: allParameters
+              });
+            }
           }
         }
-      }
-    );
+      );
   };
 
   recursivelyPopulateParameters();
@@ -93,7 +93,8 @@ const fetchKmsKeys = () => dispatch => {
       });
       return arr;
     }
-    kms
+    aws
+      .getKMS()
       .listAliases({ Limit: 100, Marker: nextMarker })
       .promise()
       .then(res => {
@@ -120,7 +121,8 @@ const fetchParameterValues = names => dispatch => {
   const chunkedNames = chunk(names, 10);
 
   const getParameterRequestActions = chunkedNames.map(currBatchNames => () =>
-    ssm
+    aws
+      .getSSM()
       .getParameters({
         Names: currBatchNames,
         // TODO: Separate out withDecryption
@@ -232,7 +234,8 @@ const createGenericParameter = (
           }
         ]
   };
-  return ssm
+  return aws
+    .getSSM()
     .putParameter(params)
     .promise()
     .then(res => {
@@ -255,7 +258,8 @@ const deleteParameter = name => dispatch => {
   const params = {
     Name: name
   };
-  return ssm
+  return aws
+    .getSSM()
     .deleteParameter(params)
     .promise()
     .then(res => {

@@ -13,12 +13,10 @@
 import { app, BrowserWindow, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import path from 'path';
 import MenuBuilder from './menu';
 
 export default class AppUpdater {
   constructor() {
-
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
 
@@ -34,7 +32,7 @@ export default class AppUpdater {
         {
           type: 'info',
           title: 'Found Updates',
-          message: 'Found updates, do you want update now?',
+          message: 'Found updates, do you want to update now?',
           buttons: ['Sure', 'No']
         },
         buttonIndex => {
@@ -56,7 +54,7 @@ export default class AppUpdater {
       dialog.showMessageBox(
         {
           title: 'Install Updates',
-          message: 'Updates downloaded, application will be quit for update...'
+          message: 'Updates downloaded. Application will quit for an update...'
         },
         () => {
           setImmediate(() => autoUpdater.quitAndInstall());
@@ -141,9 +139,12 @@ app.on('ready', async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
+  // eslint-disable-next-line no-unused-vars
+  let updater;
+
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   if (process.env.NODE_ENV === 'production') {
-    new AppUpdater();
+    updater = new AppUpdater();
   }
 });
