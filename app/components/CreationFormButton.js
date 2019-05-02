@@ -1,24 +1,35 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Button, Modal } from 'antd';
 import CreationForm from './CreationForm';
+import { formDataShape } from './formDataShape.propType';
 
 class CreationFormButton extends Component {
-  state = { visible: false };
-
   static defaultProps = {
-    buttonBlock: true
+    buttonBlock: true,
+    buttonText: 'Add New Parameter(s)',
+    modalText: 'Add New Parameter(s)',
+    buttonType: 'default',
+    editFlow: false,
+    initialFormData: null,
+    resetOnClose: false
   };
+
+  static propTypes = {
+    buttonBlock: PropTypes.bool,
+    buttonText: PropTypes.string,
+    buttonType: PropTypes.string,
+    editFlow: PropTypes.bool,
+    initialFormData: PropTypes.shape(formDataShape),
+    modalText: PropTypes.string,
+    resetOnClose: PropTypes.bool
+  };
+
+  state = { visible: false };
 
   showModal = () => {
     this.setState({
       visible: true
-    });
-  };
-
-  handleOk = e => {
-    console.log(e);
-    this.setState({
-      visible: false
     });
   };
 
@@ -30,22 +41,32 @@ class CreationFormButton extends Component {
   };
 
   render() {
+    const {
+      modalText,
+      buttonType,
+      editFlow,
+      buttonText,
+      buttonBlock,
+      initialFormData,
+      resetOnClose
+    } = this.props;
+    const { visible } = this.state;
     return (
       <div>
         <Button
-          type={this.props.buttonType || 'default'}
+          type={buttonType}
           onClick={this.showModal}
-          block={this.props.buttonBlock}
+          block={buttonBlock}
           {...this.props}
         >
-          {this.props.buttonText || 'Add New Parameter(s)'}
+          {buttonText}
         </Button>
-        {this.props.resetOnClose && !this.state.visible ? null : (
+        {resetOnClose && !visible ? null : (
           <Modal
             width={700}
-            title={this.props.modalText || 'Add New Parameter(s)'}
+            title={modalText}
             centered
-            visible={this.state.visible}
+            visible={visible}
             onCancel={this.handleCancel}
             footer={[
               <Button key="back" onClick={this.handleCancel}>
@@ -54,8 +75,8 @@ class CreationFormButton extends Component {
             ]}
           >
             <CreationForm
-              initialFormData={this.props.initialFormData}
-              editFlow={this.props.editFlow}
+              initialFormData={initialFormData}
+              editFlow={editFlow}
             />
           </Modal>
         )}

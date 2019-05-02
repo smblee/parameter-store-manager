@@ -1,16 +1,17 @@
 // @flow
 import React, { Component } from 'react';
 import {
-  Table,
+  Alert,
   Breadcrumb,
   Button,
-  Layout,
-  Tree,
   Input,
-  Typography,
-  Alert,
-  Spin
+  Layout,
+  Spin,
+  Table,
+  Tree,
+  Typography
 } from 'antd';
+import PropTypes from 'prop-types';
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -33,6 +34,16 @@ const { Search } = Input;
 const { Content, Footer, Sider } = Layout;
 
 class Home extends Component {
+  static propTypes = {
+    allParametersErrored: PropTypes.bool.isRequired,
+    allParametersLastUpdatedDate: PropTypes.string.isRequired,
+    allParametersLoaded: PropTypes.bool.isRequired,
+    allParametersLoading: PropTypes.bool.isRequired,
+    deleteParameter: PropTypes.func.isRequired,
+    fetchAllParameters: PropTypes.func.isRequired,
+    parameters: PropTypes.arrayOf().isRequired
+  };
+
   constructor(props) {
     super(props);
     const pathDelimiter = localStore.get(availableSettings.pathDelimiter);
@@ -50,8 +61,18 @@ class Home extends Component {
     };
   }
 
+  componentDidMount() {
+    const { fetchAllParameters } = this.props;
+    fetchAllParameters();
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeStore();
+  }
+
   stripTrailingPathDelimiter = str => {
-    if (str.substr(-1) === this.state.pathDelimiter) {
+    const { pathDelimiter } = this.state;
+    if (str.substr(-1) === pathDelimiter) {
       return str.substr(0, str.length - 1);
     }
     return str;
@@ -77,20 +98,14 @@ class Home extends Component {
     this.setState({ tableCursor: e.target.value });
   };
 
-  componentDidMount() {
-    this.props.fetchAllParameters();
-  }
-
-  componentWillUnmount() {
-    this.unsubscribeStore();
-  }
-
   render() {
     const {
       parameters,
       allParametersLoaded,
       allParametersLoading,
-      allParametersErrored
+      allParametersErrored,
+      fetchAllParameters,
+      allParametersLastUpdatedDate
     } = this.props;
     const { tableCursor, pathDelimiter } = this.state;
     const paramsToShowOnTable = tableCursor
@@ -107,6 +122,7 @@ class Home extends Component {
         dataIndex: 'Name',
         key: 'Name',
         width: 300,
+        // eslint-disable-next-line no-nested-ternary
         sorter: (a, b) => (a.Name < b.Name ? -1 : a.Name > b.Name ? 1 : 0),
         render: pathString => {
           const paths = pathString.split(pathDelimiter);
@@ -116,6 +132,7 @@ class Home extends Component {
             // if last index
             if (idx === paths.length - 1) {
               return (
+                // eslint-disable-next-line react/no-array-index-key
                 <Breadcrumb.Item href="#" key={pathString + idx}>
                   <Paragraph strong copyable={{ text: pathString }}>
                     {path}
@@ -127,6 +144,7 @@ class Home extends Component {
               <Breadcrumb.Item
                 href="#"
                 onClick={() => this.onTreeSelect([pathSoFar])}
+                // eslint-disable-next-line react/no-array-index-key
                 key={pathString + idx}
               >
                 {path}
@@ -200,6 +218,7 @@ class Home extends Component {
             value: e.Value,
             kmsKey: e.KeyId
           };
+          const { deleteParameter } = this.props;
           return (
             <Layout>
               <CreationFormButton
@@ -215,10 +234,7 @@ class Home extends Component {
                 initialFormData={currentData}
                 resetOnClose
               />
-              <DeleteButton
-                name={e.Name}
-                onDelete={this.props.deleteParameter}
-              />
+              <DeleteButton name={e.Name} onDelete={deleteParameter} />
             </Layout>
           );
         }
@@ -283,10 +299,8 @@ class Home extends Component {
                   <div>
                     {' '}
                     Last fetched:{' '}
-                    {this.props.allParametersLastUpdatedDate ? (
-                      <ReactTimeAgo
-                        date={this.props.allParametersLastUpdatedDate}
-                      />
+                    {allParametersLastUpdatedDate ? (
+                      <ReactTimeAgo date={allParametersLastUpdatedDate} />
                     ) : (
                       'Never'
                     )}
@@ -296,7 +310,7 @@ class Home extends Component {
                         shape="circle"
                         icon="sync"
                         loading={allParametersLoading}
-                        onClick={this.props.fetchAllParameters}
+                        onClick={fetchAllParameters}
                       />
                     </span>
                   </div>
@@ -308,7 +322,7 @@ class Home extends Component {
                 style={{ marginBottom: 8 }}
                 placeholder="/services/**/Auth0"
                 onChange={this.onTableFilterChange}
-                value={this.state.tableCursor}
+                value={tableCursor}
               />
               <Table
                 dataSource={paramsToShowOnTable}

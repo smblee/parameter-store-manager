@@ -1,13 +1,28 @@
 import React, { Component } from 'react';
-import { Button, Form, Icon, Input, Modal, Tooltip, message } from 'antd';
+import PropTypes from 'prop-types';
+import { Button, Form, Icon, Input, message, Modal, Tooltip } from 'antd';
 import localStore, { availableSettings } from '../store/localStore';
+import { formShape } from './formDataShape.propType';
+
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 14 }
+};
+const buttonItemLayout = {
+  wrapperCol: { span: 14, offset: 4 }
+};
 
 class SettingsButton extends Component {
-  state = { visible: false };
-
   static defaultProps = {
     buttonBlock: true
   };
+
+  static propTypes = {
+    buttonBlock: PropTypes.bool,
+    form: PropTypes.shape(formShape).isRequired
+  };
+
+  state = { visible: false };
 
   showModal = () => {
     this.setState({
@@ -15,7 +30,7 @@ class SettingsButton extends Component {
     });
   };
 
-  handleCancel = e => {
+  handleCancel = () => {
     this.setState({
       visible: false
     });
@@ -23,38 +38,36 @@ class SettingsButton extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
+    const { form } = this.props;
+    const { validateFields } = form;
+    validateFields((validationErr, values) => {
+      if (!validationErr) {
         try {
           // set the whole object at once.
           localStore.set(values);
           message.success('Settings were saved.');
-        } catch (err) {
-          message.error('Something went wrong while saving settings', err);
+        } catch (saveError) {
+          message.error(
+            'Something went wrong while saving settings',
+            saveError
+          );
         }
       }
     });
   };
 
   render() {
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 14 }
-    };
-    const buttonItemLayout = {
-      wrapperCol: { span: 14, offset: 4 }
-    };
-
-    const { getFieldDecorator } = this.props.form;
-
+    const { form } = this.props;
+    const { getFieldDecorator } = form;
+    const { visible } = this.state;
     return (
       <div>
         <Button icon="setting" onClick={this.showModal} />
-        {!this.state.visible ? null : (
+        {!visible ? null : (
           <Modal
             width={700}
             title="Settings"
-            visible={this.state.visible}
+            visible={visible}
             onCancel={this.handleCancel}
             footer={[
               <Button key="close" onClick={this.handleCancel}>

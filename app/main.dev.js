@@ -139,9 +139,12 @@ app.on('ready', async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
+  // eslint-disable-next-line no-unused-vars
+  let updater;
+
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   if (process.env.NODE_ENV === 'production') {
-    new AppUpdater();
+    updater = new AppUpdater();
   }
 });

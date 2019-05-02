@@ -1,11 +1,8 @@
 /* eslint-disable no-param-reassign */
-import AWS from 'aws-sdk';
-
 import { combineReducers } from 'redux';
 import chunk from 'lodash/chunk';
 import pAll from 'p-all';
 import { createSelector } from 'reselect';
-import { notification } from 'antd';
 import aws from '../clients/aws';
 
 const FETCH_ALL_PARAMETERS_REQUEST = 'FETCH_ALL_PARAMETERS_REQUEST';

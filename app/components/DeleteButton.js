@@ -1,25 +1,21 @@
 import React from 'react';
-import { Popover, Button, Popconfirm, notification } from 'antd';
+import { Button, notification, Popconfirm } from 'antd';
+import PropTypes from 'prop-types';
 
 class DeleteButton extends React.Component {
-  state = {
-    visible: false
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    onDelete: PropTypes.func.isRequired
   };
 
-  hide = () => {
-    this.setState({
-      visible: false
-    });
-  };
-
-  onDelete = () => {
-    return this.props
-      .onDelete(this.props.name)
+  delete = () => {
+    const { onDelete, name } = this.props;
+    return onDelete(name)
       .then(res => {
-        console.log(res);
         notification.success({
           message: 'Parameter was deleted.'
         });
+        return res;
       })
       .catch(err => {
         console.log(err.code, err.message);
@@ -32,16 +28,17 @@ class DeleteButton extends React.Component {
   };
 
   render() {
+    const { name } = this.props;
     return (
       <Popconfirm
         placement="left"
         title={
           <div>
             <div>Are you sure you want to delete parameter</div>
-            <code>{this.props.name}</code>
+            <code>{name}</code>
           </div>
         }
-        onConfirm={this.onDelete}
+        onConfirm={this.delete}
         onCancel={this.hide}
         okText="Yes"
         cancelText="No"

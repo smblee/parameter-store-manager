@@ -1,25 +1,20 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
-  Form,
-  Select,
-  InputNumber,
-  Switch,
-  Radio,
-  Slider,
   Button,
-  Upload,
-  Icon,
-  Rate,
   Checkbox,
-  Row,
   Col,
+  Form,
   Input,
-  Layout,
-  notification
+  notification,
+  Radio,
+  Row,
+  Select
 } from 'antd';
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { formShape, formDataShape } from './formDataShape.propType';
 import {
   actions as parameterActions,
   selectors as parameterSelectors
@@ -36,47 +31,78 @@ const ENTITY_STATUS = {
 };
 
 class CreationForm extends React.Component {
+  static propTypes = {
+    createGenericParameter: PropTypes.func.isRequired,
+    createServiceParameters: PropTypes.func.isRequired,
+    editFlow: PropTypes.bool.isRequired,
+    fetchKmsKeys: PropTypes.func.isRequired,
+    form: PropTypes.shape(formShape).isRequired,
+    initialFormData: PropTypes.shape(formDataShape),
+    kmsKeyLoadError: PropTypes.bool,
+    kmsKeyLoaded: PropTypes.bool,
+    kmsKeyLoading: PropTypes.bool,
+    kmsKeys: PropTypes.arrayOf(PropTypes.object)
+  };
+
+  static defaultProps = {
+    initialFormData: null,
+    kmsKeyLoadError: false,
+    kmsKeyLoaded: false,
+    kmsKeyLoading: false,
+    kmsKeys: []
+  };
+
   constructor(props) {
     super(props);
+
+    const { initialFormData, editFlow } = props;
+
     this.state = {
-      creationType:
-        props.initialFormData || props.editFlow ? 'generic' : 'service',
+      creationType: initialFormData || editFlow ? 'generic' : 'service',
       creationState: ENTITY_STATUS.initial,
-      initialFormData: props.initialFormData || {}
+      initialFormData: initialFormData || {}
     };
   }
 
   componentDidMount() {
-    this.props.fetchKmsKeys();
+    const { fetchKmsKeys } = this.props;
+    fetchKmsKeys();
   }
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
+    const {
+      form,
+      editFlow,
+      createServiceParameters,
+      createGenericParameter
+    } = this.props;
+    const { validateFields } = form;
+    validateFields((validationErr, values) => {
+      if (!validationErr) {
+        const { creationType } = this.state;
         const creationFn =
-          this.state.creationType === 'service'
-            ? this.props.createServiceParameters
-            : this.props.createGenericParameter;
+          creationType === 'service'
+            ? createServiceParameters
+            : createGenericParameter;
         this.setState({ creationState: ENTITY_STATUS.loading });
-        creationFn(values, !!this.props.editFlow)
+        creationFn(values, !!editFlow)
           .then(res => {
             notification.success({
-              message: this.props.editFlow
+              message: editFlow
                 ? 'Parameter was saved.'
                 : 'Parameter(s) were created.'
             });
             this.setState({ creationState: ENTITY_STATUS.loaded });
-            console.log(res);
+            return res;
           })
-          .catch(err => {
-            console.log(err);
+          .catch(creationError => {
+            console.log(creationError);
             notification.error({
-              message: this.props.editFlow
+              message: editFlow
                 ? 'Parameter was not saved'
                 : 'One or more parameters were not created.',
-              description: err.message || ''
+              description: creationError.message || ''
             });
             this.setState({ creationState: ENTITY_STATUS.error });
           });
@@ -99,7 +125,7 @@ class CreationForm extends React.Component {
     } = this.props;
 
     const { getFieldDecorator } = form;
-    const { creationType } = this.state;
+    const { creationType, creationState, initialFormData } = this.state;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 }
@@ -148,13 +174,13 @@ class CreationForm extends React.Component {
           )}
           <Form.Item label="Parameter Name">
             {getFieldDecorator('name', {
-              initialValue: this.state.initialFormData.name,
+              initialValue: initialFormData.name,
               rules: [
                 {
                   required: true,
                   message: 'Please provide the parameter name.'
                 },
-                this.state.creationType === 'service' && {
+                creationType === 'service' && {
                   pattern: /^[^\s\\/]+$/,
                   message: 'Whitespace, /, \\ is not allowed.'
                 }
@@ -173,7 +199,7 @@ class CreationForm extends React.Component {
 
           <Form.Item label="Description">
             {getFieldDecorator('description', {
-              initialValue: this.state.initialFormData.description
+              initialValue: initialFormData.description
             })(
               <Input placeholder="This is used by the integration tests for the parameter store package" />
             )}
@@ -212,10 +238,9 @@ class CreationForm extends React.Component {
               )}
             </Form.Item>
           )}
-
           <Form.Item label="Type">
             {getFieldDecorator('type', {
-              initialValue: this.state.initialFormData.type || 'String',
+              initialValue: initialFormData.type || 'String',
               rules: [
                 { required: true, message: 'Please select the parameter type.' }
               ]
@@ -232,7 +257,7 @@ class CreationForm extends React.Component {
           {form.getFieldValue('type') === 'SecureString' && (
             <Form.Item label="Select KMS Key" hasFeedback>
               {getFieldDecorator('kmsKey', {
-                initialValue: this.state.initialFormData.kmsKey,
+                initialValue: initialFormData.kmsKey,
                 rules: [
                   {
                     required: true,
@@ -263,7 +288,7 @@ class CreationForm extends React.Component {
           )}
           <Form.Item label="Value">
             {getFieldDecorator('value', {
-              initialValue: this.state.initialFormData.value,
+              initialValue: initialFormData.value,
               rules: [
                 { required: true, message: 'Please provide the value.' },
                 {
@@ -275,55 +300,56 @@ class CreationForm extends React.Component {
           </Form.Item>
 
           {!editFlow &&
-          creationType === 'service' &&
-          form.getFieldValue('serviceName') &&
-          form.getFieldValue('name') &&
-          form.getFieldValue('environments').length ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column'
-              }}
-            >
-              <div>
-                <b>{`${
-                  (form.getFieldValue('environments') || []).length
-                } parameter(s)`}</b>{' '}
-                will be created with the following name(s):
+            creationType === 'service' &&
+            form.getFieldValue('serviceName') &&
+            form.getFieldValue('name') &&
+            form.getFieldValue('environments').length && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column'
+                }}
+              >
+                <div>
+                  <b>{`${
+                    (form.getFieldValue('environments') || []).length
+                  } parameter(s)`}</b>{' '}
+                  will be created with the following name(s):
+                </div>
+                <div>
+                  {(form.getFieldValue('environments') || []).map(env => (
+                    <h4>
+                      /services/{env}/{form.getFieldValue('serviceName')}/
+                      {form.getFieldValue('name')}{' '}
+                    </h4>
+                  ))}
+                </div>
               </div>
-              <div>
-                {(form.getFieldValue('environments') || []).map(env => (
-                  <h4>
-                    /services/{env}/{form.getFieldValue('serviceName')}/
-                    {form.getFieldValue('name')}{' '}
-                  </h4>
-                ))}
-              </div>
-            </div>
-          ) : !editFlow &&
+            )}
+          {!editFlow &&
             creationType === 'generic' &&
-            form.getFieldValue('name') ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column'
-              }}
-            >
-              <div>
-                <b>{`1 parameter`}</b> will be created with the following name:
+            form.getFieldValue('name') && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column'
+                }}
+              >
+                <div>
+                  <b>1 parameter</b> will be created with the following name:
+                </div>
+                <h4>{form.getFieldValue('name')}</h4>
               </div>
-              <h4>{form.getFieldValue('name')}</h4>
-            </div>
-          ) : null}
+            )}
           <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
             <Button
               type="primary"
               htmlType="submit"
-              loading={this.state.creationState === ENTITY_STATUS.loading}
+              loading={creationState === ENTITY_STATUS.loading}
             >
               {editFlow ? 'Save' : 'Create'}
             </Button>
@@ -351,4 +377,5 @@ const WrappedParameterCreationForm = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Form.create({ name: 'parameter_creation' })(CreationForm));
+
 export default WrappedParameterCreationForm;

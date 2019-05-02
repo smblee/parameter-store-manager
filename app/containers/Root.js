@@ -1,16 +1,18 @@
 // @flow
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
-import type { Store } from '../reducers/types';
 import Routes from '../Routes';
 
-type Props = {
-  store: Store,
-  history: {}
-};
+export default class Root extends Component {
+  static propTypes = {
+    // eslint-disable-next-line react/forbid-prop-types
+    history: PropTypes.any.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    store: PropTypes.any.isRequired
+  };
 
-export default class Root extends Component<Props> {
   render() {
     const { store, history } = this.props;
     return (
