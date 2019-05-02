@@ -212,9 +212,9 @@ export default class MenuBuilder {
             : app.getVersion()
         }`,
         click: () => {
-          if (process.env.NODE_ENV !== 'development') {
-            autoUpdater.checkForUpdates();
-          }
+          // if (process.env.NODE_ENV !== 'development') {
+          //   autoUpdater.checkForUpdates();
+          // }
         }
       }
     ];

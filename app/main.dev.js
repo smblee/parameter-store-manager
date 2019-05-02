@@ -26,43 +26,43 @@ export default class AppUpdater {
         error == null ? 'unknown' : (error.stack || error).toString()
       );
     });
+    //
+    // autoUpdater.on('update-available', () => {
+    //   dialog.showMessageBox(
+    //     {
+    //       type: 'info',
+    //       title: 'Found Updates',
+    //       message: 'Found updates, do you want to update now?',
+    //       buttons: ['Sure', 'No']
+    //     },
+    //     buttonIndex => {
+    //       if (buttonIndex === 0) {
+    //         autoUpdater.downloadUpdate();
+    //       }
+    //     }
+    //   );
+    // });
+    //
+    // autoUpdater.on('update-not-available', () => {
+    //   dialog.showMessageBox({
+    //     title: 'No Updates',
+    //     message: 'Current version is up-to-date.'
+    //   });
+    // });
+    //
+    // autoUpdater.on('update-downloaded', () => {
+    //   dialog.showMessageBox(
+    //     {
+    //       title: 'Install Updates',
+    //       message: 'Updates downloaded. Application will quit for an update...'
+    //     },
+    //     () => {
+    //       setImmediate(() => autoUpdater.quitAndInstall());
+    //     }
+    //   );
+    // });
 
-    autoUpdater.on('update-available', () => {
-      dialog.showMessageBox(
-        {
-          type: 'info',
-          title: 'Found Updates',
-          message: 'Found updates, do you want to update now?',
-          buttons: ['Sure', 'No']
-        },
-        buttonIndex => {
-          if (buttonIndex === 0) {
-            autoUpdater.downloadUpdate();
-          }
-        }
-      );
-    });
-
-    autoUpdater.on('update-not-available', () => {
-      dialog.showMessageBox({
-        title: 'No Updates',
-        message: 'Current version is up-to-date.'
-      });
-    });
-
-    autoUpdater.on('update-downloaded', () => {
-      dialog.showMessageBox(
-        {
-          title: 'Install Updates',
-          message: 'Updates downloaded. Application will quit for an update...'
-        },
-        () => {
-          setImmediate(() => autoUpdater.quitAndInstall());
-        }
-      );
-    });
-
-    autoUpdater.checkForUpdates();
+    autoUpdater.checkForUpdatesAndNotify();
   }
 }
 
