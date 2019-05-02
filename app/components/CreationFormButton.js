@@ -53,12 +53,7 @@ class CreationFormButton extends Component {
     const { visible } = this.state;
     return (
       <div>
-        <Button
-          type={buttonType}
-          onClick={this.showModal}
-          block={buttonBlock}
-          {...this.props}
-        >
+        <Button type={buttonType} onClick={this.showModal} block={buttonBlock}>
           {buttonText}
         </Button>
         {resetOnClose && !visible ? null : (
