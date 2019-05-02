@@ -2,7 +2,9 @@
 import { combineReducers } from 'redux';
 import chunk from 'lodash/chunk';
 import pAll from 'p-all';
+import { notification } from 'antd';
 import { createSelector } from 'reselect';
+import stringifyObject from 'stringify-object';
 import aws from '../clients/aws';
 
 const FETCH_ALL_PARAMETERS_REQUEST = 'FETCH_ALL_PARAMETERS_REQUEST';
@@ -45,6 +47,12 @@ const fetchAllParameters = () => dispatch => {
             dispatch({
               type: FETCH_ALL_PARAMETERS_FAILURE,
               payload: err
+            });
+            console.log(err);
+            notification.error({
+              message:
+                'Parameters were not loaded. Check your AWS Connections (~/.aws/credentials, STSKey, or environment variables)',
+              description: stringifyObject(err)
             });
           } else {
             dispatch({
