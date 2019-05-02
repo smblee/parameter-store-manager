@@ -257,7 +257,7 @@
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.6",
     "react-hot-loader": "^4.8.4",
-    "react-redux": "^7.0.2",
+    "react-redux": "^7.0.3",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-time-ago": "^5.0.4",
