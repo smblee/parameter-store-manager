@@ -57,6 +57,7 @@
       "git add"
     ]
   },
+  "homepage": "https://github.com/smblee/parameter-store-manager",
   "main": "./app/main.prod.js",
   "build": {
     "productName": "ParameterStoreManager",
@@ -109,7 +110,8 @@
     }
   },
   "author": {
-    "name": "smblee"
+    "name": "smblee",
+    "email": "smblee14@gmail.com"
   },
   "license": "MIT",
   "keywords": [
