@@ -93,17 +93,16 @@ This project comes with Flow support out of the box! You can annotate your code 
 ## TODOS
 
 - Add app icon
-- Move off of yarn to npm
-- Set up CI for release. (Windows, Mac, Linux)
+- ~~Set up CI for release. (Windows, Mac, Linux)~~
 - Clean up the code base and all the unneeded boilerplate code.
-- Create other releases besides Windows.
+- ~~Create other releases besides Windows.~~
 - Add tests
 - Support other types of add use cases besides the assumed `services` pattern.
 - Ability to view previous versions
 - Logging
 - Backup
 - Autocomplete (service names)
-- Configure AWS Setup (Environments, etc.)
+- ~~Configure AWS Setup (Environments, etc.)~~
 - Bulk delete
 - Bulk edit
 
