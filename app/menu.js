@@ -1,6 +1,5 @@
 // @flow
 import { app, Menu, BrowserWindow } from 'electron';
-import { autoUpdater } from 'electron-updater';
 
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
@@ -210,12 +209,7 @@ export default class MenuBuilder {
           process.env.NODE_ENV === 'development'
             ? 'DEVELOPMENT'
             : app.getVersion()
-        }`,
-        click: () => {
-          // if (process.env.NODE_ENV !== 'development') {
-          //   autoUpdater.checkForUpdates();
-          // }
-        }
+        }`
       }
     ];
 

@@ -10,7 +10,7 @@
  *
  * @flow
  */
-import { app, BrowserWindow, dialog } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -20,49 +20,7 @@ export default class AppUpdater {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
 
-    autoUpdater.on('error', error => {
-      dialog.showErrorBox(
-        'Error: ',
-        error == null ? 'unknown' : (error.stack || error).toString()
-      );
-    });
-    //
-    // autoUpdater.on('update-available', () => {
-    //   dialog.showMessageBox(
-    //     {
-    //       type: 'info',
-    //       title: 'Found Updates',
-    //       message: 'Found updates, do you want to update now?',
-    //       buttons: ['Sure', 'No']
-    //     },
-    //     buttonIndex => {
-    //       if (buttonIndex === 0) {
-    //         autoUpdater.downloadUpdate();
-    //       }
-    //     }
-    //   );
-    // });
-    //
-    // autoUpdater.on('update-not-available', () => {
-    //   dialog.showMessageBox({
-    //     title: 'No Updates',
-    //     message: 'Current version is up-to-date.'
-    //   });
-    // });
-    //
-    // autoUpdater.on('update-downloaded', () => {
-    //   dialog.showMessageBox(
-    //     {
-    //       title: 'Install Updates',
-    //       message: 'Updates downloaded. Application will quit for an update...'
-    //     },
-    //     () => {
-    //       setImmediate(() => autoUpdater.quitAndInstall());
-    //     }
-    //   );
-    // });
-
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdates();
   }
 }
 
