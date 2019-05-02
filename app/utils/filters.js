@@ -1,21 +1,25 @@
+/* eslint-disable no-param-reassign */
 // Helper functions for trees/filtering
-export const pathsToTreeNodes = pathStrings => {
+export const pathsToTreeNodes = (pathStrings, pathDelimiter) => {
   const tree = {};
 
   function addNode(pathStr) {
-    const splitPath = pathStr.split('/');
+    // add the pathDelimiter (e.g. '/', '-') to the beginning if it doesn't exist.
+    const extendedPathStr =
+      pathStr[0] !== pathDelimiter ? pathDelimiter + pathStr : pathStr;
+    const splitPath = extendedPathStr.split(pathDelimiter);
     let ptr = tree;
-    for (let i = 0; i < splitPath.length; i++) {
+    splitPath.forEach((path, i) => {
       const node = {
-        name: splitPath[i],
-        title: splitPath[i],
-        key: splitPath.slice(0, i + 1).join('/') + '/'
+        name: path,
+        title: path,
+        key: splitPath.slice(0, i + 1).join(pathDelimiter)
       };
 
-      ptr[splitPath[i]] = ptr[splitPath[i]] || node;
-      ptr[splitPath[i]].children = ptr[splitPath[i]].children || {};
-      ptr = ptr[splitPath[i]].children;
-    }
+      ptr[path] = ptr[path] || node;
+      ptr[path].children = ptr[path].children || {};
+      ptr = ptr[path].children;
+    });
   }
 
   function objectToArr(node) {

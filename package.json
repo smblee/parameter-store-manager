@@ -57,6 +57,7 @@
       "git add"
     ]
   },
+  "homepage": "https://github.com/smblee/parameter-store-manager",
   "main": "./app/main.prod.js",
   "build": {
     "productName": "ParameterStoreManager",
@@ -109,7 +110,8 @@
     }
   },
   "author": {
-    "name": "smblee"
+    "name": "smblee",
+    "email": "smblee14@gmail.com"
   },
   "license": "MIT",
   "keywords": [
@@ -231,7 +233,8 @@
     "webpack-cli": "^3.3.1",
     "webpack-dev-server": "^3.3.1",
     "webpack-merge": "^4.2.1",
-    "yarn": "^1.15.2"
+    "yarn": "^1.15.2",
+    "prop-types": "^15.7.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
@@ -241,10 +244,13 @@
     "devtron": "^1.4.0",
     "electron-debug": "^2.2.0",
     "electron-log": "^3.0.5",
+    "electron-store": "^3.2.0",
     "electron-updater": "^4.0.6",
     "glob-to-regexp": "^0.4.1",
     "history": "^4.9.0",
+    "javascript-time-ago": "^2.0.1",
     "lodash": "^4.17.11",
+    "memoize-one": "^5.0.4",
     "p-all": "^2.1.0",
     "react": "^16.8.6",
     "react-copy-to-clipboard": "^5.0.1",
@@ -257,8 +263,7 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "source-map-support": "^0.5.12",
-    "javascript-time-ago": "^2.0.1"
+    "source-map-support": "^0.5.12"
   },
   "devEngines": {
     "node": ">=7.x",

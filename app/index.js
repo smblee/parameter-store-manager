@@ -1,12 +1,12 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
+import JavascriptTimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en';
+
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import './app.global.css';
-import JavascriptTimeAgo from 'javascript-time-ago';
-
-import en from 'javascript-time-ago/locale/en';
 
 JavascriptTimeAgo.locale(en);
 
