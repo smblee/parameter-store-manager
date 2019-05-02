@@ -62,7 +62,7 @@ export default class AppUpdater {
       );
     });
 
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdates();
   }
 }
 
