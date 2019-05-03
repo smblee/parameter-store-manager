@@ -240,7 +240,7 @@
     "@fortawesome/fontawesome-free": "^5.8.1",
     "antd": "^3.16.6",
     "aws-sdk": "^2.441.0",
-    "core-js": "2",
+    "core-js": "3",
     "devtron": "^1.4.0",
     "electron-debug": "^2.2.0",
     "electron-log": "^3.0.5",
