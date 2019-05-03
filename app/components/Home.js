@@ -35,7 +35,7 @@ const { Content, Footer, Sider } = Layout;
 class Home extends Component {
   static propTypes = {
     allParametersErrored: PropTypes.bool,
-    allParametersLastUpdatedDate: PropTypes.string.isRequired,
+    allParametersLastUpdatedDate: PropTypes.instanceOf(Date).isRequired,
     allParametersLoaded: PropTypes.bool,
     allParametersLoading: PropTypes.bool,
     deleteParameter: PropTypes.func.isRequired,

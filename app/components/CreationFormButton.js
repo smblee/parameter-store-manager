@@ -33,8 +33,7 @@ class CreationFormButton extends Component {
     });
   };
 
-  handleCancel = e => {
-    console.log(e);
+  handleCancel = () => {
     this.setState({
       visible: false
     });
