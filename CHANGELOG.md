@@ -1,8 +1,16 @@
-# 0.2.0 (04-22-2019) (first release) 
+# 0.5.X
+
+### 0.5.0
+
+- Fixed auto update. The application should silently download and update itself upon closing the application.
+
+# 0.2.0 (04-22-2019) (first release)
+
 ##### Supported features
+
 - View parameters: Tree view, list view
 - Filter parameters: Filter by keyword (with highlighting)
-- Search parameters: by path (glob (*, **) supported)
+- Search parameters: by path (glob (\*, \*\*) supported)
   - e.g. `/path/**/*Url`
   - e.g. `*parameter`
 - Add new parameters
@@ -21,4 +29,5 @@
 - Program Auto Updater/Update checker (Buggy?)
 
 ##### Note
-* _Assumes `eu-west-1` as the environment at the moment. This will be customizable soon._ 
+
+- _Assumes `eu-west-1` as the environment at the moment. This will be customizable soon._
