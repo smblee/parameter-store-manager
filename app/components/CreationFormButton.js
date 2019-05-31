@@ -11,7 +11,7 @@ class CreationFormButton extends Component {
     modalText: 'Add New Parameter(s)',
     buttonType: 'default',
     editFlow: false,
-    initialFormData: null,
+    initialFormData: {},
     resetOnClose: false
   };
 

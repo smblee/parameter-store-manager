@@ -32,21 +32,34 @@ const { Search } = Input;
 
 const { Content, Footer, Sider } = Layout;
 
+const parameterPropType = PropTypes.shape({
+  Description: PropTypes.string,
+  KeyId: PropTypes.string,
+  LastModifiedDate: PropTypes.instanceOf(Date),
+  LastModifiedUser: PropTypes.string,
+  Name: PropTypes.string,
+  Policies: PropTypes.array,
+  Tier: PropTypes.string,
+  Type: PropTypes.string,
+  Version: PropTypes.number
+});
+
 class Home extends Component {
   static propTypes = {
     allParametersErrored: PropTypes.bool,
-    allParametersLastUpdatedDate: PropTypes.instanceOf(Date).isRequired,
+    allParametersLastUpdatedDate: PropTypes.instanceOf(Date),
     allParametersLoaded: PropTypes.bool,
     allParametersLoading: PropTypes.bool,
     deleteParameter: PropTypes.func.isRequired,
     fetchAllParameters: PropTypes.func.isRequired,
-    parameters: PropTypes.arrayOf().isRequired
+    parameters: PropTypes.arrayOf(parameterPropType).isRequired
   };
 
   static defaultProps = {
     allParametersErrored: false,
     allParametersLoaded: false,
-    allParametersLoading: false
+    allParametersLoading: false,
+    allParametersLastUpdatedDate: null
   };
 
   constructor(props) {
@@ -87,7 +100,12 @@ class Home extends Component {
     data.map(item => {
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.key} dataRef={item}>
+          <TreeNode
+            title={item.title}
+            key={item.key}
+            dataRef={item}
+            rowKey={item.key}
+          >
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
@@ -112,6 +130,7 @@ class Home extends Component {
       fetchAllParameters,
       allParametersLastUpdatedDate
     } = this.props;
+
     const { tableCursor, pathDelimiter } = this.state;
     const paramsToShowOnTable = tableCursor
       ? parameters.filter(param => {
