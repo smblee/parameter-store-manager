@@ -11598,9 +11598,9 @@ stylehacks@^4.0.0:
     postcss "^7.0.0"
     postcss-selector-parser "^3.0.0"
 
-stylelint-config-prettier@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/stylelint-config-prettier/-/stylelint-config-prettier-5.1.0.tgz#bbc21d4b0dc01c8d19c181c2cca68fb8dadb515b"
+stylelint-config-prettier@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/stylelint-config-prettier/-/stylelint-config-prettier-5.2.0.tgz#b73d56a380662abd434ed745ca84db15e1a5aac6"
 
 stylelint-config-recommended@^2.2.0:
   version "2.2.0"
