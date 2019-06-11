@@ -119,6 +119,27 @@ class SettingsButton extends Component {
                   ]
                 })(<Input placeholder="eu-west-1" />)}
               </Form.Item>
+              <Form.Item
+                label={
+                  <span>
+                    AWS Profile&nbsp;
+                    <Tooltip title="Changing the profile requires relaunching the application">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }
+                {...formItemLayout}
+              >
+                {getFieldDecorator(availableSettings.profile, {
+                  initialValue: localStore.get(availableSettings.profile),
+                  rules: [
+                    {
+                      required: false,
+                      message: 'Optional'
+                    }
+                  ]
+                })(<Input placeholder="" />)}
+              </Form.Item>
               <Form.Item {...buttonItemLayout}>
                 <Button type="primary" htmlType="submit">
                   Save

@@ -2,6 +2,13 @@ import AWS from 'aws-sdk';
 import memoizeOne from 'memoize-one';
 import localStore from '../store/localStore';
 
+process.env['AWS_SDK_LOAD_CONFIG'] = 'true';
+
+var credentials = new AWS.SharedIniFileCredentials({profile: localStore.get('profile')});
+if ( typeof credentials !== 'undefined' && credentials ) {
+  AWS.config.credentials = credentials;
+}
+
 const ssm = memoizeOne(region => new AWS.SSM({ region }));
 const kms = memoizeOne(region => new AWS.KMS({ region }));
 

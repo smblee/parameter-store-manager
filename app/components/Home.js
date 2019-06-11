@@ -60,6 +60,14 @@ class Home extends Component {
       }
     );
 
+    const profile = localStore.get(availableSettings.profile);
+    this.unsubscribeStore = localStore.onDidChange(
+      availableSettings.profile,
+      (newValue, oldValue) => {
+        if (newValue !== oldValue) this.setState({ profile: newValue });
+      }
+    );
+
     this.state = {
       tableCursor: '',
       pathDelimiter
