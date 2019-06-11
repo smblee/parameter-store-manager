@@ -46,6 +46,9 @@ class SettingsButton extends Component {
           // set the whole object at once.
           localStore.set(values);
           message.success('Settings were saved.');
+          this.setState({
+            visible: false
+          });
         } catch (saveError) {
           message.error(
             'Something went wrong while saving settings',
