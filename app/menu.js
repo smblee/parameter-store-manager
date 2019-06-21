@@ -45,17 +45,17 @@ export default class MenuBuilder {
 
   buildDarwinTemplate() {
     const subMenuAbout = {
-      label: 'Electron',
+      label: 'Parameter Store Manager',
       submenu: [
         {
-          label: 'About ElectronReact',
+          label: 'About Parameter Store Manager',
           selector: 'orderFrontStandardAboutPanel:'
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide ElectronReact',
+          label: 'Hide Parameter Store Manager',
           accelerator: 'Command+H',
           selector: 'hide:'
         },
@@ -66,6 +66,14 @@ export default class MenuBuilder {
         },
         { label: 'Show All', selector: 'unhideAllApplications:' },
         { type: 'separator' },
+        {
+          label: 'Restart',
+          accelerator: 'Command+Shift+R',
+          click: () => {
+            app.relaunch();
+            app.quit();
+          }
+        },
         {
           label: 'Quit',
           accelerator: 'Command+Q',

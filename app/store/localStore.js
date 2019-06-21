@@ -3,7 +3,8 @@ import Store from 'electron-store';
 const availableSettings = {
   pathDelimiter: 'pathDelimiter',
   ssmRegion: 'ssmRegion',
-  kmsRegion: 'kmsRegion'
+  kmsRegion: 'kmsRegion',
+  profile: 'profile'
 };
 
 const schema = {
@@ -18,6 +19,10 @@ const schema = {
   [availableSettings.kmsRegion]: {
     type: 'string',
     default: 'eu-west-1'
+  },
+  [availableSettings.profile]: {
+    type: 'string',
+    default: ''
   }
 };
 
