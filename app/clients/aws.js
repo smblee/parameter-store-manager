@@ -2,10 +2,12 @@ import AWS from 'aws-sdk';
 import memoizeOne from 'memoize-one';
 import localStore from '../store/localStore';
 
-process.env['AWS_SDK_LOAD_CONFIG'] = 'true';
+process.env.AWS_SDK_LOAD_CONFIG = true;
 
-var credentials = new AWS.SharedIniFileCredentials({profile: localStore.get('profile')});
-if ( typeof credentials !== 'undefined' && credentials ) {
+const credentials = new AWS.SharedIniFileCredentials({
+  profile: localStore.get('profile')
+});
+if (typeof credentials !== 'undefined' && credentials) {
   AWS.config.credentials = credentials;
 }
 
