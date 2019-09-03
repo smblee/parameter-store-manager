@@ -1,24 +1,21 @@
 import AWS from 'aws-sdk';
-import memoizeOne from 'memoize-one';
 import localStore from '../store/localStore';
 
 process.env.AWS_SDK_LOAD_CONFIG = true;
 
-const profile = localStore.get('profile');
-const sharedIniFileCredentials = new AWS.SharedIniFileCredentials({ profile });
-const processCredentials = new AWS.ProcessCredentials({ profile });
+const credentialProvider = new AWS.CredentialProviderChain([
+  () => new AWS.EnvironmentCredentials('AWS'),
+  () => new AWS.EnvironmentCredentials('AMAZON'),
+  () =>
+    new AWS.SharedIniFileCredentials({ profile: localStore.get('profile') }),
+  () => new AWS.ProcessCredentials({ profile: localStore.get('profile') })
+  // TODO: Add more credential providers as needed. https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CredentialProviderChain.html#providers-property
+]);
 
-const chain = new AWS.CredentialProviderChain();
-chain.providers.push(sharedIniFileCredentials);
-chain.providers.push(processCredentials);
-chain.resolve((err, credentials) => {
-  if (typeof credentials !== 'undefined' && credentials) {
-    AWS.config.credentials = credentials;
-  }
-});
-
-const ssm = memoizeOne(region => new AWS.SSM({ region }));
-const kms = memoizeOne(region => new AWS.KMS({ region }));
+const ssm = region =>
+  new AWS.SSM({ region, credentials: null, credentialProvider });
+const kms = region =>
+  new AWS.KMS({ region, credentials: null, credentialProvider });
 
 const getSSM = () => ssm(localStore.get('ssmRegion'));
 const getKMS = () => kms(localStore.get('kmsRegion'));
