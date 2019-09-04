@@ -4576,9 +4576,9 @@ electron-updater@^4.0.6:
     semver "^5.6.0"
     source-map-support "^0.5.9"
 
-electron@^4.1.4:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-4.1.5.tgz#d1873147d5be36ab0c8bb9db3a54297a82ee8fef"
+electron@^4.2.10:
+  version "4.2.10"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-4.2.10.tgz#7096450bb14875ec2e6797316c0c1034e7fe2b76"
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
