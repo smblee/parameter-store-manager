@@ -243,7 +243,7 @@
     "core-js": "2",
     "devtron": "^1.4.0",
     "electron-debug": "^2.2.0",
-    "electron-log": "^3.0.5",
+    "electron-log": "^3.0.9",
     "electron-store": "^3.2.0",
     "electron-updater": "^4.0.6",
     "glob-to-regexp": "^0.4.1",
