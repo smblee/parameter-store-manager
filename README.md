@@ -10,7 +10,7 @@ Built with `electron-react-boilerplate`.
 
 ## Quick Start
 - Download the binary here (Supports Windows, MacOS, Linux): https://github.com/smblee/parameter-store-manager/releases
-- Make sure you have AWS Credentials set up on your machine (there are several ways to do this. E.g. `~/.aws/credentials` method) https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+- Set up AWS Credentials (there are several ways to do this. E.g. `~/.aws/credentials` method) https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html#specifying-credentials
 - Run the downloaded binary!
 
 ## Current Features
