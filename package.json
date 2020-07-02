@@ -238,7 +238,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
-    "antd": "^3.16.6",
+    "antd": "^3.26.18",
     "aws-sdk": "^2.441.0",
     "core-js": "2",
     "devtron": "^1.4.0",
