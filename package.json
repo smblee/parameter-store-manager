@@ -250,7 +250,7 @@
     "history": "^4.9.0",
     "javascript-stringify": "^2.0.0",
     "javascript-time-ago": "^2.0.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "memoize-one": "^5.0.4",
     "p-all": "^2.1.0",
     "react": "^16.8.6",
