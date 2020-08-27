@@ -249,7 +249,7 @@
     "glob-to-regexp": "^0.4.1",
     "history": "^4.9.0",
     "javascript-stringify": "^2.0.0",
-    "javascript-time-ago": "^2.0.1",
+    "javascript-time-ago": "^2.0.13",
     "lodash": "^4.17.11",
     "memoize-one": "^5.0.4",
     "p-all": "^2.1.0",
