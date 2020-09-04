@@ -208,7 +208,7 @@
     "jest": "^24.7.1",
     "lint-staged": "^8.1.5",
     "mini-css-extract-plugin": "^0.6.0",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.13.1",
     "opencollective-postinstall": "^2.0.2",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "prettier": "^1.17.0",
