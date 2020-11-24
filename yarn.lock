@@ -6058,8 +6058,8 @@ highlight-es@^1.0.0:
     js-tokens "^3.0.0"
 
 highlight.js@^9.3.0:
-  version "9.15.6"
-  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.15.6.tgz#72d4d8d779ec066af9a17cb14360c3def0aa57c4"
+  version "9.18.5"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.18.5.tgz#d18a359867f378c138d6819edfc2a8acd5f29825"
 
 history@^4.9.0:
   version "4.9.0"
