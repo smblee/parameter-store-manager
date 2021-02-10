@@ -215,7 +215,7 @@
     "prop-types": "^15.7.2",
     "react-test-renderer": "^16.8.6",
     "redux-logger": "^3.0.6",
-    "rimraf": "^2.6.3",
+    "rimraf": "^2.7.1",
     "sass-loader": "^7.1.0",
     "sinon": "^7.3.2",
     "spectron": "^5.0.0",
