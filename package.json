@@ -237,7 +237,7 @@
     "yarn": "^1.15.2"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.8.1",
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "antd": "^3.16.6",
     "aws-sdk": "^2.441.0",
     "core-js": "2",
