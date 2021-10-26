@@ -14,11 +14,14 @@ import {
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
 import { formShape, formDataShape } from './formDataShape.propType';
 import {
   actions as parameterActions,
   selectors as parameterSelectors
 } from '../ducks/parameters';
+import { valueIsJson } from '../utils/valueIsJson';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -79,6 +82,8 @@ class CreationForm extends React.Component {
     } = this.props;
     const { validateFields } = form;
     validateFields((validationErr, values) => {
+      const params = values;
+      params.value = values.value.json || values.value; // handle json editor
       if (!validationErr) {
         const { creationType } = this.state;
         const creationFn =
@@ -86,7 +91,7 @@ class CreationForm extends React.Component {
             ? createServiceParameters
             : createGenericParameter;
         this.setState({ creationState: ENTITY_STATUS.loading });
-        creationFn(values, !!editFlow)
+        creationFn(params, !!editFlow)
           .then(res => {
             notification.success({
               message: editFlow
@@ -113,6 +118,21 @@ class CreationForm extends React.Component {
     this.setState({ creationType: e.target.value });
   };
 
+  validateValue = async (rule, value, callback) => {
+    if (!value || !value.plainText || !value.plainText.length === 0) {
+      return callback('Value is required');
+    }
+    if (value.error && value.error.reason) {
+      return callback(value.error.reason);
+    }
+    if (value.plainText.length > 4096) {
+      return callback(
+        'The maximum allowed size of 4096 characters (assuming all chars are one byte).'
+      );
+    }
+    return callback();
+  };
+
   render() {
     const {
       form,
@@ -129,6 +149,8 @@ class CreationForm extends React.Component {
       labelCol: { span: 6 },
       wrapperCol: { span: 14 }
     };
+
+    let useJsonInput = valueIsJson(initialFormData.value);
 
     return (
       <div>
@@ -247,8 +269,8 @@ class CreationForm extends React.Component {
               <Radio.Group>
                 <Radio value="String">String</Radio>
                 <Radio value="SecureString">SecureString</Radio>
-                <Radio value="StringList" disabled>
-                  StringList (Not supported yet)
+                <Radio value="StringList">
+                  StringList (comma separated string, no spaces)
                 </Radio>
               </Radio.Group>
             )}
@@ -285,19 +307,34 @@ class CreationForm extends React.Component {
               )}
             </Form.Item>
           )}
-          <Form.Item label="Value">
-            {getFieldDecorator('value', {
-              initialValue: initialFormData.value,
-              rules: [
-                { required: true, message: 'Please provide the value.' },
-                {
-                  max: 4096,
-                  message: 'The maximum allowed length is 4096 characters.'
-                }
-              ]
-            })(<TextArea rows={4} autosize={{ minRows: 2, maxRows: 8 }} />)}
-          </Form.Item>
-
+          {useJsonInput && (
+            <Form.Item label="Value">
+              {getFieldDecorator('value', {
+                initialValue: initialFormData.value,
+                rules: [{ validator: this.validateValue }]
+              })(
+                <JSONInput
+                  placeholder={JSON.parse(initialFormData.value)}
+                  theme="light_mitsuketa_tribute"
+                  locale={locale}
+                />
+              )}
+            </Form.Item>
+          )}
+          {!useJsonInput && (
+            <Form.Item label="Value">
+              {getFieldDecorator('value', {
+                initialValue: initialFormData.value,
+                rules: [
+                  { required: true, message: 'Please provide the value.' },
+                  {
+                    max: 4096,
+                    message: 'The maximum allowed length is 4096 characters.'
+                  }
+                ]
+              })(<TextArea rows={4} autosize={{ minRows: 2, maxRows: 8 }} />)}
+            </Form.Item>
+          )}
           {!editFlow &&
             creationType === 'service' &&
             form.getFieldValue('serviceName') &&
