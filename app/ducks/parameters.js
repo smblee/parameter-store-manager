@@ -6,6 +6,7 @@ import { notification } from 'antd';
 import { createSelector } from 'reselect';
 import stringifyObject from 'stringify-object';
 import aws from '../clients/aws';
+import localStore, { availableSettings } from '../store/localStore';
 
 const FETCH_ALL_PARAMETERS_REQUEST = 'FETCH_ALL_PARAMETERS_REQUEST';
 const FETCH_ALL_PARAMETERS_FAILURE = 'FETCH_ALL_PARAMETERS_FAILURE';
@@ -37,45 +38,55 @@ const fetchAllParameters = () => dispatch => {
 
   let allParameters = [];
 
+  const paramFilter = localStore.get(availableSettings.pathFilter);
+  const params = { MaxResults: 50 };
+
+  if (paramFilter) {
+    params.ParameterFilters = [
+      { Key: 'Name', Option: 'Contains', Values: [paramFilter] }
+    ];
+  }
+
   const recursivelyPopulateParameters = nextToken => {
-    aws
-      .getSSM()
-      .describeParameters(
-        { NextToken: nextToken, MaxResults: 50 },
-        (err, data) => {
-          if (err) {
-            dispatch({
-              type: FETCH_ALL_PARAMETERS_FAILURE,
-              payload: err
-            });
-            notification.error({
-              message:
-                'Parameters were not loaded. Check your AWS Connections (~/.aws/credentials, STSKey, or environment variables)',
-              description: stringifyObject(err)
-            });
+    aws.getSSM().describeParameters(
+      {
+        ...params,
+        NextToken: nextToken
+      },
+      (err, data) => {
+        if (err) {
+          dispatch({
+            type: FETCH_ALL_PARAMETERS_FAILURE,
+            payload: err
+          });
+          notification.error({
+            message:
+              'Parameters were not loaded. Check your AWS Connections (~/.aws/credentials, STSKey, or environment variables)',
+            description: stringifyObject(err)
+          });
+        } else {
+          dispatch({
+            type: FETCH_ALL_PARAMETERS_BATCH_LOADED,
+            payload: data.Parameters
+          });
+
+          const names = data.Parameters.map(p => p.Name);
+
+          // initiate the action creator to fetch parameter values
+          dispatch(fetchParameterValues(names));
+
+          allParameters = [...allParameters, ...data.Parameters];
+          if (data.NextToken) {
+            recursivelyPopulateParameters(data.NextToken);
           } else {
             dispatch({
-              type: FETCH_ALL_PARAMETERS_BATCH_LOADED,
-              payload: data.Parameters
+              type: FETCH_ALL_PARAMETERS_SUCCESS,
+              payload: allParameters
             });
-
-            const names = data.Parameters.map(p => p.Name);
-
-            // initiate the action creator to fetch parameter values
-            dispatch(fetchParameterValues(names));
-
-            allParameters = [...allParameters, ...data.Parameters];
-            if (data.NextToken) {
-              recursivelyPopulateParameters(data.NextToken);
-            } else {
-              dispatch({
-                type: FETCH_ALL_PARAMETERS_SUCCESS,
-                payload: allParameters
-              });
-            }
           }
         }
-      );
+      }
+    );
   };
 
   recursivelyPopulateParameters();

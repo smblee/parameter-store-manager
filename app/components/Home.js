@@ -11,7 +11,8 @@ import {
   Typography
 } from 'antd';
 import PropTypes from 'prop-types';
-
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactTimeAgo from 'react-time-ago';
@@ -25,6 +26,7 @@ import CreationFormButton from './CreationFormButton';
 import DeleteButton from './DeleteButton';
 import localStore, { availableSettings } from '../store/localStore';
 import SettingsButton from './SettingsButton';
+import { valueIsJson } from '../utils/valueIsJson';
 
 const { TreeNode } = Tree;
 const { Paragraph } = Typography;
@@ -121,6 +123,18 @@ class Home extends Component {
         })
       : parameters;
 
+    const descWidth = 250;
+    const typeWidth = 120;
+    const modifiedWidth = 175;
+    let valueWidth = 300;
+    valueWidth += localStore.get(availableSettings.hideDescription)
+      ? descWidth
+      : 0;
+    valueWidth += localStore.get(availableSettings.hideLastModifiedDate)
+      ? modifiedWidth
+      : 0;
+    valueWidth += localStore.get(availableSettings.hideType) ? typeWidth : 0;
+
     const columns = [
       {
         title: 'Name',
@@ -164,24 +178,41 @@ class Home extends Component {
           );
         }
       },
-
       {
         title: 'Value',
         dataIndex: 'Value',
         key: 'Value',
-        width: 300,
+        width: valueWidth,
 
-        render: value => (
-          <Paragraph style={{ wordBreak: 'break-word' }} copyable>
-            {value}
-          </Paragraph>
-        )
-      },
-      {
+        render: value => {
+          let useJsonInput = valueIsJson(value);
+          if (useJsonInput) {
+            return (
+              <JSONInput
+                placeholder={JSON.parse(value)}
+                viewOnly
+                theme="light_mitsuketa_tribute"
+                locale={locale}
+                height="150px"
+                width={`${valueWidth - 25}px`}
+                confirmGood={false}
+              />
+            );
+          }
+          return (
+            <Paragraph style={{ wordBreak: 'break-word' }} copyable>
+              {value}
+            </Paragraph>
+          );
+        }
+      }
+    ];
+    if (!localStore.get(availableSettings.hideDescription)) {
+      columns.push({
         title: 'Description',
         dataIndex: 'Description',
         key: 'Description',
-        width: 250,
+        width: descWidth,
         render: value => {
           return value ? (
             <Paragraph style={{ wordBreak: 'break-word' }} copyable>
@@ -191,17 +222,24 @@ class Home extends Component {
             <i>No Description</i>
           );
         }
-      },
-      {
+      });
+    }
+
+    if (!localStore.get(availableSettings.hideType)) {
+      columns.push({
         title: 'Type',
         dataIndex: 'Type',
         key: 'Type',
-        width: 120
-      },
-      {
+        width: typeWidth
+      });
+    }
+
+    if (!localStore.get(availableSettings.hideLastModifiedDate)) {
+      columns.push({
         title: 'LastModifiedDate',
         dataIndex: 'LastModifiedDate',
         key: 'LastModifiedDate',
+        width: modifiedWidth,
         sorter: (a, b) =>
           new Date(a.LastModifiedDate) - new Date(b.LastModifiedDate),
         render: date => (
@@ -209,42 +247,43 @@ class Home extends Component {
             {<ReactTimeAgo date={date} />} ({date.toLocaleString()})
           </span>
         )
-      },
-      {
-        title: 'Actions',
-        key: 'Actions',
-        width: 100,
-        fixed: 'right',
-        render: e => {
-          const currentData = {
-            name: e.Name,
-            description: e.Description,
-            type: e.Type,
-            value: e.Value,
-            kmsKey: e.KeyId
-          };
-          const { deleteParameter } = this.props;
-          return (
-            <Layout>
-              <CreationFormButton
-                buttonText="Edit"
-                modalText="Edit"
-                initialFormData={currentData}
-                resetOnClose
-                editFlow
-              />
-              <CreationFormButton
-                buttonType="primary"
-                buttonText="Duplicate"
-                initialFormData={currentData}
-                resetOnClose
-              />
-              <DeleteButton name={e.Name} onDelete={deleteParameter} />
-            </Layout>
-          );
-        }
+      });
+    }
+
+    columns.push({
+      title: 'Actions',
+      key: 'Actions',
+      width: 125,
+      fixed: 'right',
+      render: e => {
+        const currentData = {
+          name: e.Name,
+          description: e.Description,
+          type: e.Type,
+          value: e.Value,
+          kmsKey: e.KeyId
+        };
+        const { deleteParameter } = this.props;
+        return (
+          <Layout>
+            <CreationFormButton
+              buttonText="Edit"
+              modalText="Edit"
+              initialFormData={currentData}
+              resetOnClose
+              editFlow
+            />
+            <CreationFormButton
+              buttonType="primary"
+              buttonText="Duplicate"
+              initialFormData={currentData}
+              resetOnClose
+            />
+            <DeleteButton name={e.Name} onDelete={deleteParameter} />
+          </Layout>
+        );
       }
-    ];
+    });
 
     return (
       <Layout>

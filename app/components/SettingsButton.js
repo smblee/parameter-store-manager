@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Form, Icon, Input, message, Modal, Tooltip } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Form,
+  Icon,
+  Input,
+  message,
+  Modal,
+  Tooltip
+} from 'antd';
 import localStore, { availableSettings } from '../store/localStore';
 import { formShape } from './formDataShape.propType';
 
@@ -100,6 +109,21 @@ class SettingsButton extends Component {
                   ]
                 })(<Input placeholder="/" />)}
               </Form.Item>
+              <Form.Item
+                label={
+                  <span>
+                    Path Filter&nbsp;
+                    <Tooltip title="The filter to use to pull ssm params needed. To pull all params use ''.">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }
+                {...formItemLayout}
+              >
+                {getFieldDecorator(availableSettings.pathFilter, {
+                  initialValue: localStore.get(availableSettings.pathFilter)
+                })(<Input placeholder="" />)}
+              </Form.Item>
               <Form.Item label="AWS SSM Region" {...formItemLayout}>
                 {getFieldDecorator(availableSettings.ssmRegion, {
                   initialValue: localStore.get(availableSettings.ssmRegion),
@@ -142,6 +166,49 @@ class SettingsButton extends Component {
                     }
                   ]
                 })(<Input placeholder="" />)}
+              </Form.Item>
+              <Form.Item
+                label={
+                  <span>
+                    AWS CA Bundle Path&nbsp;
+                    <Tooltip title="Changing the ca bundle path requires relaunching the application">
+                      <Icon type="question-circle-o" />
+                    </Tooltip>
+                  </span>
+                }
+                {...formItemLayout}
+              >
+                {getFieldDecorator(availableSettings.caBundlePath, {
+                  initialValue: localStore.get(availableSettings.caBundlePath),
+                  rules: [
+                    {
+                      required: false,
+                      message: 'Optional'
+                    }
+                  ]
+                })(<Input placeholder="" />)}
+              </Form.Item>
+              <Form.Item label="Hide Description" {...formItemLayout}>
+                {getFieldDecorator(availableSettings.hideDescription, {
+                  valuePropName: 'checked',
+                  initialValue: localStore.get(
+                    availableSettings.hideDescription
+                  )
+                })(<Checkbox />)}
+              </Form.Item>
+              <Form.Item label="Hide Last Modified Date" {...formItemLayout}>
+                {getFieldDecorator(availableSettings.hideLastModifiedDate, {
+                  valuePropName: 'checked',
+                  initialValue: localStore.get(
+                    availableSettings.hideLastModifiedDate
+                  )
+                })(<Checkbox />)}
+              </Form.Item>
+              <Form.Item label="Hide Type" {...formItemLayout}>
+                {getFieldDecorator(availableSettings.hideType, {
+                  valuePropName: 'checked',
+                  initialValue: localStore.get(availableSettings.hideType)
+                })(<Checkbox />)}
               </Form.Item>
               <Form.Item {...buttonItemLayout}>
                 <Button type="primary" htmlType="submit">
